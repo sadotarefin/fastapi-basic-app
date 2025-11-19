@@ -1,4 +1,7 @@
-from fastapi import APIRouter
+from typing import Annotated
+from fastapi import APIRouter, Depends
+
+from ..securitymanager import oauth2_scheme
 
 router = APIRouter(
     prefix="/users",
@@ -18,7 +21,7 @@ async def read_users():
     ]
 
 @router.get("/users/me")
-async def read_user_me():
+async def read_user_me(token: Annotated[str, Depends(oauth2_scheme)]):
     return {
         "username": "fakecurrentuser",
     }
