@@ -1,6 +1,6 @@
 from typing import Annotated
 from fastapi import APIRouter, Depends
-from ..core.routes import USERS_PREFIX
+from ..core.api_urls import USERS_PREFIX
 
 from ..core.security import oauth2_scheme
 

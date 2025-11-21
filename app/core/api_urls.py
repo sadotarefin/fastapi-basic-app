@@ -1,0 +1,5 @@
+AUTH_PREFIX = "/auth"
+TOKEN = "/token"
+TOKEN_FULL_PATH = f"{AUTH_PREFIX}/{TOKEN}"
+
+USERS_PREFIX = "/users"

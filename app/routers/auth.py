@@ -3,7 +3,7 @@ from typing import Annotated
 from fastapi import Depends, APIRouter
 from fastapi.security import OAuth2PasswordRequestForm
 
-from ..core.routes import AUTH_PREFIX
+from ..core.api_urls import AUTH_PREFIX
 
 
 router = APIRouter(
