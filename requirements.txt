@@ -1,1 +1,4 @@
-"fastapi[standard]"
+fastapi
+sqlmodel
+pydantic-settings
+pwdlib[argon2]
