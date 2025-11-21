@@ -2,3 +2,4 @@ fastapi
 sqlmodel
 pydantic-settings
 pwdlib[argon2]
+pyjwt

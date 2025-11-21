@@ -1,10 +1,11 @@
 from typing import Annotated
-from fastapi import APIRouter, Depends, HTTPException, status, Query
-from ..core.api_urls import USERS_PREFIX 
-from ..schemas.user import UserCreate, UserPublic
-from ..services.user_service import UserService
-from ..core.security import oauth2_scheme
-from ..db.db import SessionDep
+from fastapi import APIRouter, Depends, Query
+from app.core.api_urls import USERS_PREFIX 
+from app.schemas.user import UserCreate, UserPublic
+from app.services.user_service import UserService
+from app.services.auth_service import AuthService
+#from ..core.security import oauth2_scheme
+from app.db.db import SessionDep
 
 router = APIRouter(
     prefix=USERS_PREFIX,
@@ -14,14 +15,11 @@ router = APIRouter(
 
 @router.get("/", response_model=list[UserPublic])
 async def read_users(session: SessionDep, offset: Annotated[int, Query(ge=0)]=0, limit: Annotated[int, Query(ge=1)] = 100):
-    print(f'adfasdf {offset}, limit {limit}')
     return UserService.get_all_user(session, offset, limit)
 
-@router.get("/me")
-async def read_user_me(token: Annotated[str, Depends(oauth2_scheme)]):
-    return {
-        "username": "fakecurrentuser",
-    }
+@router.get("/me", response_model=UserPublic)
+async def read_user_me(current_user: Annotated[str, Depends(AuthService.get_current_user)]):
+    return current_user
 
 @router.get("/{user_id}")
 async def read_user(user_id: str):
@@ -31,11 +29,7 @@ async def read_user(user_id: str):
 
 @router.post("/", response_model=UserPublic)
 async def create_user(session: SessionDep, data: UserCreate):
-    try:
-        user = UserService.register_user(session, data)
-        return user
-    except ValueError as e:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
+    return UserService.register_user(session, data)
         
         
 

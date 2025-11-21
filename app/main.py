@@ -3,6 +3,8 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Depends
 
+from app.exceptions.exception_handler import *
+
 from .routers import auth, users
 from .core.config import Settings, get_app_settings
 from .db.db import create_db_and_tables, get_session
@@ -20,6 +22,9 @@ app = FastAPI(lifespan=lifespan)
 
 app.include_router(auth.router)
 app.include_router(users.router)
+
+app.add_exception_handler(CredentialException, credential_exception_handler)
+app.add_exception_handler(ConflictException, conflict_exception_handler)
 
 
 @app.get("/")
