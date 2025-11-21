@@ -1,8 +1,11 @@
 from typing import Annotated
 from fastapi import APIRouter, Depends
+from sqlmodel import select
 from ..core.api_urls import USERS_PREFIX
-
+from ..models.user import User
+from ..schemas.user import UserPublic
 from ..core.security import oauth2_scheme
+from ..core.db import SessionDep
 
 router = APIRouter(
     prefix=USERS_PREFIX,
@@ -10,16 +13,9 @@ router = APIRouter(
     responses={404: {"description": "Not found"}}
 )
 
-@router.get("/")
-async def read_users():
-    return [
-        {
-            "username": "Rick",
-        },
-        {
-            "username": "Morty",
-        }
-    ]
+@router.get("/", response_model=list[UserPublic])
+async def read_users(session: SessionDep):
+    return session.exec(select(User)).all()
 
 @router.get("/me")
 async def read_user_me(token: Annotated[str, Depends(oauth2_scheme)]):

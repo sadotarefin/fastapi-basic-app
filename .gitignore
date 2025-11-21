@@ -192,3 +192,7 @@ cython_debug/
 # Translations
 *.mo
 *.pot
+
+
+# Alembic Migrations
+/alembic/versions/
