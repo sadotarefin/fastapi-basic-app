@@ -1,8 +1,6 @@
 from typing import Annotated
-from fastapi import APIRouter, Depends, HTTPException, status
-from sqlmodel import select
-from ..core.api_urls import USERS_PREFIX
-from ..models.user import User
+from fastapi import APIRouter, Depends, HTTPException, status, Query
+from ..core.api_urls import USERS_PREFIX 
 from ..schemas.user import UserCreate, UserPublic
 from ..services.user_service import UserService
 from ..core.security import oauth2_scheme
@@ -15,8 +13,9 @@ router = APIRouter(
 )
 
 @router.get("/", response_model=list[UserPublic])
-async def read_users(session: SessionDep):
-    return session.exec(select(User)).all()
+async def read_users(session: SessionDep, offset: Annotated[int, Query(ge=0)]=0, limit: Annotated[int, Query(ge=1)] = 100):
+    print(f'adfasdf {offset}, limit {limit}')
+    return UserService.get_all_user(session, offset, limit)
 
 @router.get("/me")
 async def read_user_me(token: Annotated[str, Depends(oauth2_scheme)]):

@@ -16,7 +16,7 @@ class UserCrud:
     @staticmethod
     def get_all(session: Session, offset: 0, limit: 100):
         return session.exec(
-            select(User).offset(offset).limit(limit)
+            select(User).order_by(User.id).offset(offset).limit(limit)
         ).all()
     
     @staticmethod

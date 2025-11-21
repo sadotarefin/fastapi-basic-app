@@ -12,3 +12,8 @@ class UserService:
             raise ValueError("Username or email already taken")
         password = password_hash.hash(data.password)
         return UserCrud.create_user(session, data, password=password)
+    
+    @staticmethod
+    def get_all_user(session: Session, offset, limit)->list[UserPublic]:
+        print(f"Ofset is {offset} and limit is {limit}")
+        return UserCrud.get_all(session, offset, limit)
