@@ -1,0 +1,15 @@
+from typing import Annotated
+
+from fastapi import Depends, APIRouter
+from fastapi.security import OAuth2PasswordRequestForm
+
+from ..core.routes import AUTH_PREFIX
+
+
+router = APIRouter(
+    prefix=AUTH_PREFIX
+)
+
+@router.post("/token")
+async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
+    return {"access_token": "hellotoken", "token_type": "bearer"}
