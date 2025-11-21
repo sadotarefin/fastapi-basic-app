@@ -5,8 +5,8 @@ from fastapi import FastAPI, Depends
 
 from .routers import auth, users
 from .core.config import Settings, get_app_settings
-from .core.db import create_db_and_tables, get_session
-from .core.init_db import create_seed_data
+from .db.db import create_db_and_tables, get_session
+from .db.init_db import create_seed_data
 
 
 @asynccontextmanager

@@ -1,6 +1,6 @@
 from sqlmodel import select
 
-from .security import password_hash
+from ..core.security import password_hash
 from ..models.user import User
 
 

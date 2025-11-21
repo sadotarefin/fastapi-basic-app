@@ -1,14 +1,15 @@
 from .base_sql_model import BaseSqlModel
 from pydantic import EmailStr
 
-from sqlmodel import Field
+from sqlmodel import SQLModel, Field
 
-class UserBase(BaseSqlModel):
-    username: str = Field(index=True, max_length=12)
-    email: EmailStr | None = Field(default=None, max_length=80)
+class UserBase(SQLModel):
+    username: str = Field(index=True, max_length=20, unique=True)
+    email: EmailStr = Field(index=True, max_length=80, unique=True)
     full_name: str | None = Field(default=None, max_length=40)
-    disabled: bool = False
 
-class User(UserBase, table=True):
+
+class User(BaseSqlModel, UserBase, table=True):
     id: int | None = Field(default=None, primary_key=True)
     hashed_password: str
+    disabled: bool = False

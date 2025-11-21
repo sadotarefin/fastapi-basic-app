@@ -15,7 +15,7 @@ class BaseSqlModel(SQLModel):
     )
     updated_at: datetime = Field(
         default_factory=utc_now, 
-        nullable=True 
+        nullable=False 
         #sa_column=Column(
          #   DateTime,
           #  nullable=False,
