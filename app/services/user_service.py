@@ -1,8 +1,10 @@
-from sqlmodel import Session, func
+from sqlmodel import Session
+
+from app.core.security import password_hash
 from app.crud.user import UserCrud
 from app.exceptions.exception_handler import ConflictException
 from app.schemas.user import UserCreate, UserPublic
-from ..core.security import password_hash
+
 
 class UserService:
 

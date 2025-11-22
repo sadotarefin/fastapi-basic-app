@@ -1,17 +1,17 @@
-from sqlmodel import Session
 from datetime import datetime, timedelta, timezone
+
+import jwt
+from fastapi import Depends
+from jwt.exceptions import InvalidTokenError
+from sqlmodel import Session
+from typing_extensions import Annotated
+
 from app.core.config import Settings, SettingsDep
+from app.core.security import oauth2_scheme, password_hash
+from app.crud.user import UserCrud
 from app.db.db import SessionDep
 from app.exceptions.exception_handler import CredentialException
 from app.schemas.user import UserPublic
-from app.crud.user import UserCrud
-from app.core.security import password_hash
-from app.core.security import oauth2_scheme
-import jwt
-from jwt.exceptions import InvalidTokenError
-from typing_extensions import Annotated
-
-from fastapi import Depends
 
 
 class AuthService:
