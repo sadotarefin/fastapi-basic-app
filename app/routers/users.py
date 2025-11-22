@@ -35,17 +35,16 @@ def read_user_me(
     return current_user
 
 
-@router.get("/{user_id}")
+@router.get("/{user_id}", response_model=UserPublic)
 def read_user(
     user_id: str,
+    session: SessionDep,
     current_user: Annotated[
         UserPublic,
         Security(AuthService.get_current_user, scopes=[Permissions.READ_USERS]),
     ],
 ):
-    return {
-        "username": f"{user_id}_user",
-    }
+    return UserService.get_user(session, user_id=user_id)
 
 
 @router.post("/", response_model=UserPublic)
