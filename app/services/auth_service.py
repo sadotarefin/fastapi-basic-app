@@ -92,9 +92,7 @@ class AuthService:
 
         user_in_db = UserCrud.get_by_username(session, username=username)
         for scope in security_scopes.scopes:
-            if scope not in token_data.scopes and scope not in get_user_scopes(
-                user_in_db.role
-            ):
+            if scope not in token_data.scopes:
                 raise CredentialException(authenticate_value)
 
         return user_in_db
