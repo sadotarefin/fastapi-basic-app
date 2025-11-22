@@ -1,8 +1,9 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, Security
 
 from app.core.api_urls import USERS_PREFIX
+from app.core.security import Permissions
 from app.db.db import SessionDep
 from app.schemas.pagination import PaginatedResponse, PaginationParams
 from app.schemas.user import UserCreate, UserPublic
@@ -26,15 +27,16 @@ def read_users(session: SessionDep, filter_query: Annotated[PaginationParams, Qu
 
 @router.get("/me", response_model=UserPublic)
 def read_user_me(
-    current_user: Annotated[UserPublic, Depends(AuthService.get_current_user)],
+    current_user: Annotated[UserPublic, Security(AuthService.get_current_user, scopes=[Permissions.READ_SELF])]
 ):
     return current_user
 
 
 @router.get("/{user_id}")
-def read_user(user_id: str):
+def read_user(user_id: str, current_user: Annotated[UserPublic, Security(AuthService.get_current_user, scopes=[Permissions.READ_USERS])]):
     return {
         "username": f"{user_id}_user",
+        
     }
 
 

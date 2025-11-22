@@ -1,6 +1,6 @@
 from sqlmodel import Session
 
-from app.core.security import password_hash
+from app.core.security import get_password_hash
 from app.crud.user import UserCrud
 from app.exceptions.exception_handler import ConflictException
 from app.schemas.user import UserCreate, UserPublic
@@ -13,7 +13,7 @@ class UserService:
         user = UserCrud.get_by_username_or_email(session, data.username, data.email)
         if user:
             raise ConflictException()
-        password = password_hash.hash(data.password)
+        password = get_password_hash(data.password)
         return UserCrud.create_user(session, data, password=password)
     
     @staticmethod
