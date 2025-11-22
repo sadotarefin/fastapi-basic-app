@@ -4,10 +4,8 @@ from fastapi import Depends, FastAPI
 from typing_extensions import Annotated
 
 from app.exceptions.exception_handler import (
-    ConflictException,
-    CredentialException,
-    conflict_exception_handler,
-    credential_exception_handler,
+    ReferenceException,
+    reference_exception_handler,
 )
 
 from .core.config import Settings, get_app_settings
@@ -19,7 +17,7 @@ from .routers import auth, users
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     create_db_and_tables()
-    create_seed_data(next(get_session()),get_app_settings())
+    create_seed_data(next(get_session()), get_app_settings())
     yield
 
 
@@ -28,8 +26,7 @@ app = FastAPI(lifespan=lifespan)
 app.include_router(auth.router)
 app.include_router(users.router)
 
-app.add_exception_handler(CredentialException, credential_exception_handler)
-app.add_exception_handler(ConflictException, conflict_exception_handler)
+app.add_exception_handler(ReferenceException, reference_exception_handler)
 
 
 @app.get("/")

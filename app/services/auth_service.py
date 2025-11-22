@@ -2,7 +2,7 @@ from datetime import datetime, timedelta, timezone
 
 from fastapi.security import SecurityScopes
 import jwt
-from fastapi import Depends
+from fastapi import Depends, status, HTTPException
 from jwt.exceptions import InvalidTokenError
 from sqlmodel import Session
 from typing_extensions import Annotated
@@ -11,7 +11,11 @@ from app.core.config import Settings, SettingsDep
 from app.core.security import get_user_scopes, oauth2_scheme, verify_password
 from app.crud.user import UserCrud
 from app.db.db import SessionDep
-from app.exceptions.exception_handler import CredentialException
+from app.exceptions.exception_handler import (
+    CredentialException,
+    CustomTokenException,
+    ForbiddenException,
+)
 from app.schemas.auth import TokenData
 from app.schemas.user import UserPublic
 
@@ -54,9 +58,11 @@ class AuthService:
 
         to_encode = {
             "sub": user.username,
+            "user_id": str(user.id),
             "role": user.role.value,
-            "scopes": " ".join(scopes),
+            "scope": " ".join(scopes),
             "exp": expire,
+            "iat": datetime.now(timezone.utc),
         }
 
         encode_jwt = jwt.encode(
@@ -84,15 +90,37 @@ class AuthService:
             username = payload.get("sub")
             if not username:
                 raise CredentialException(headers=authenticate_value)
-            scope: str = payload.get("scope", " ")
-            token_scopes = scope.split(" ")
+            scope: str = payload.get("scope", "")
+            token_scopes = scope.split() if scope else []
             token_data = TokenData(username=username, scopes=token_scopes)
+        except jwt.ExpiredSignatureError:
+            raise CustomTokenException(
+                header=authenticate_value,
+                message="Token has expired",
+                status_code=status.HTTP_401_UNAUTHORIZED,
+            )
+        except jwt.InvalidSignatureError:
+            raise CustomTokenException(
+                header=authenticate_value,
+                message="Invalid token signature",
+                status_code=status.HTTP_401_UNAUTHORIZED,
+            )
         except InvalidTokenError:
             raise CredentialException(headers=authenticate_value)
 
         user_in_db = UserCrud.get_by_username(session, username=username)
+
+        if not user_in_db:
+            raise CredentialException(headers=authenticate_value)
+
+        if user_in_db.disabled:
+            raise ForbiddenException(detail="Inactive user")
+
         for scope in security_scopes.scopes:
             if scope not in token_data.scopes:
-                raise CredentialException(authenticate_value)
+                raise ForbiddenException(
+                    detail=f"Not enough permissions. Required: {scope}",
+                    headers=authenticate_value,
+                )
 
         return user_in_db
