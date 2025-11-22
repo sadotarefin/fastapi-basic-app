@@ -16,7 +16,17 @@ router = APIRouter(
 
 
 @router.get("/", response_model=PaginatedResponse[UserPublic])
-def read_users(session: SessionDep, filter_query: Annotated[PaginationParams, Query()]):
+def read_users(
+    session: SessionDep,
+    filter_query: Annotated[PaginationParams, Query()],
+    current_user: Annotated[
+        UserPublic,
+        Security(
+            AuthService.get_current_user,
+            scopes=[Permissions.READ_USERS, Permissions.ADMIN],
+        ),
+    ],
+):
     items, total = UserService.get_all_user(
         session, filter_query.offset, filter_query.limit
     )
