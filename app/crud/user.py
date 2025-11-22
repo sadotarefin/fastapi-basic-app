@@ -1,4 +1,4 @@
-from sqlmodel import select, Session, or_
+from sqlmodel import select, Session, or_, func
 from ..models.user import User
 from ..schemas.user import UserCreate, UserUpdate
 
@@ -12,6 +12,12 @@ class UserCrud:
         session.commit()
         session.refresh(model)
         return model
+    
+    @staticmethod
+    def count_users(session: Session):
+        return session.exec(
+            select(func.count()).select_from(User)
+        ).one()
     
     @staticmethod
     def get_all(session: Session, offset: 0, limit: 100):
