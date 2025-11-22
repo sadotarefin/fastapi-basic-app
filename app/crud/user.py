@@ -1,6 +1,6 @@
-from sqlmodel import select, Session, or_, func
-from ..models.user import User
-from ..schemas.user import UserCreate, UserUpdate
+from sqlmodel import select, Session, or_, func, desc
+from app.models.user import User
+from app.schemas.user import UserCreate, UserUpdate
 
 class UserCrud:
     @staticmethod
@@ -22,7 +22,7 @@ class UserCrud:
     @staticmethod
     def get_all(session: Session, offset: 0, limit: 100):
         return session.exec(
-            select(User).order_by(User.id).offset(offset).limit(limit)
+            select(User).order_by(User.id).offset(offset).limit(limit).order_by(desc(User.created_at))
         ).all()
     
     @staticmethod

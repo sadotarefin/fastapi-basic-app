@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, Query
 
 from app.core.api_urls import USERS_PREFIX 
 from app.schemas.user import UserCreate, UserPublic
-from app.schemas.pagination import PaginatedResponse
+from app.schemas.pagination import PaginatedResponse, PaginationParams
 from app.services.user_service import UserService
 from app.services.auth_service import AuthService
 from app.db.db import SessionDep
@@ -16,9 +16,10 @@ router = APIRouter(
 )
 
 @router.get("/", response_model=PaginatedResponse[UserPublic])
-def read_users(session: SessionDep, offset: Annotated[int, Query(ge=0)]=0, limit: Annotated[int, Query(ge=1, le=100)] = 10):
-    items, total = UserService.get_all_user(session, offset, limit)
-    return PaginatedResponse(items=items, total=total, offset=offset, limit=limit)
+def read_users(session: SessionDep, filter_query: Annotated[PaginationParams, Query()]):
+    print(filter_query)
+    items, total = UserService.get_all_user(session, filter_query.offset, filter_query.limit)
+    return PaginatedResponse(items=items, total=total, offset=filter_query.offset, limit=filter_query.limit)
 
 @router.get("/me", response_model=UserPublic)
 def read_user_me(current_user: Annotated[UserPublic, Depends(AuthService.get_current_user)]):

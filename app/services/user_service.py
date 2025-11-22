@@ -16,5 +16,6 @@ class UserService:
     
     @staticmethod
     def get_all_user(session: Session, offset, limit)->list[UserPublic]:
-        total = UserCrud.count_users(session)
+        #TODO: This can be replaced with windows function to read results and totals using one single query.
+        total = UserCrud.count_users(session) 
         return UserCrud.get_all(session, offset, limit), total
