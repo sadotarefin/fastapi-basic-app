@@ -1,9 +1,12 @@
+from datetime import datetime
 from sqlmodel import SQLModel
-from ..models.user import UserBase
+from app.models.user import UserBase
 from pydantic import EmailStr, Field
 
 class UserPublic(UserBase):
     id: int
+    created_at: datetime
+    updated_at: datetime
 
 class UserCreate(UserBase):
     password: str

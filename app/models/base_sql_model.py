@@ -9,7 +9,7 @@ def utc_now():
     return datetime.now(timezone.utc)
 
 class BaseSqlModel(SQLModel):
-    create_at: datetime = Field(
+    created_at: datetime = Field(
         default_factory=utc_now,
         nullable=False 
     )

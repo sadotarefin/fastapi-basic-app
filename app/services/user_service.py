@@ -16,5 +16,4 @@ class UserService:
     
     @staticmethod
     def get_all_user(session: Session, offset, limit)->list[UserPublic]:
-        print(f"Ofset is {offset} and limit is {limit}")
         return UserCrud.get_all(session, offset, limit)

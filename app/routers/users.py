@@ -14,21 +14,21 @@ router = APIRouter(
 )
 
 @router.get("/", response_model=list[UserPublic])
-async def read_users(session: SessionDep, offset: Annotated[int, Query(ge=0)]=0, limit: Annotated[int, Query(ge=1)] = 100):
+def read_users(session: SessionDep, offset: Annotated[int, Query(ge=0)]=0, limit: Annotated[int, Query(ge=1)] = 100):
     return UserService.get_all_user(session, offset, limit)
 
 @router.get("/me", response_model=UserPublic)
-async def read_user_me(current_user: Annotated[str, Depends(AuthService.get_current_user)]):
+def read_user_me(current_user: Annotated[UserPublic, Depends(AuthService.get_current_user)]):
     return current_user
 
 @router.get("/{user_id}")
-async def read_user(user_id: str):
+def read_user(user_id: str):
     return {
         "username": f"{user_id}_user",
     }
 
 @router.post("/", response_model=UserPublic)
-async def create_user(session: SessionDep, data: UserCreate):
+def create_user(session: SessionDep, data: UserCreate):
     return UserService.register_user(session, data)
         
         

@@ -33,20 +33,20 @@ class AuthService:
         return user_in_db
     
     @staticmethod
-    async def preapre_access_token(settings: Settings, user: UserPublic):    
+    async def prepare_access_token(settings: Settings, user: UserPublic):    
         access_token_expires_delta = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
         expire = datetime.now(timezone.utc) + access_token_expires_delta
         to_encode = {
             "sub": user.username
-        }.copy() 
+        }
         to_encode.update({"exp": expire})
-        encode_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
+        encode_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=[settings.ALGORITHM])
         return encode_jwt
     
     @staticmethod
     async def get_current_user(settings: SettingsDep, session: SessionDep, token: Annotated[str, Depends(oauth2_scheme)]):
         try:
-            payload = jwt.decode(token, settings.SECRET_KEY, algorithms=settings.ALGORITHM)
+            payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
             username = payload.get("sub")
             if not username:
                 raise CredentialException()
