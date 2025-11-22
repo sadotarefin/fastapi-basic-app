@@ -1,6 +1,8 @@
-from sqlmodel import select, Session, or_, func, desc
+from sqlmodel import Session, desc, func, or_, select
+
 from app.models.user import User
 from app.schemas.user import UserCreate, UserUpdate
+
 
 class UserCrud:
     @staticmethod

@@ -1,14 +1,19 @@
-from typing_extensions import Annotated
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, Depends
+from fastapi import Depends, FastAPI
+from typing_extensions import Annotated
 
-from app.exceptions.exception_handler import *
+from app.exceptions.exception_handler import (
+    ConflictException,
+    CredentialException,
+    conflict_exception_handler,
+    credential_exception_handler,
+)
 
-from .routers import auth, users
 from .core.config import Settings, get_app_settings
 from .db.db import create_db_and_tables, get_session
 from .db.init_db import create_seed_data
+from .routers import auth, users
 
 
 @asynccontextmanager
